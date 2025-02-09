@@ -37,7 +37,7 @@ export async function registerPasskey({
 }: PasskeyRegistrationOptions): Promise<RegistrationResponseJSON> {
   try {
     // 1. Get registration options from server
-    const response = await fetch('/api/auth/passkey/register-options', {
+    const response = await fetch('/api/auth/passkey/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId, username, displayName }),
@@ -55,7 +55,7 @@ export async function registerPasskey({
     });
 
     // 3. Verify the passkey with the server
-    const verificationResponse = await fetch('/api/auth/passkey/verify-registration', {
+    const verificationResponse = await fetch('/api/auth/passkey/verify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(attResp),

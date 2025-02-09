@@ -5,6 +5,17 @@ import { PrismaClient } from '@prisma/client';
 
 let dbInstance: DatabaseClient | null = null;
 
+export async function ensureDatabase(): Promise<DatabaseClient> {
+  if (dbInstance) return dbInstance;
+
+  const config = {
+    type: process.env.DATABASE_TYPE as 'firebase' | 'prisma',
+    url: process.env.DATABASE_URL
+  };
+
+  return createDatabaseClient(config);
+}
+
 export async function createDatabaseClient(config: DatabaseConfig): Promise<DatabaseClient> {
   if (dbInstance) return dbInstance;
 
@@ -50,12 +61,9 @@ export async function createDatabaseClient(config: DatabaseConfig): Promise<Data
   return dbInstance;
 }
 
-// Helper function to get the current database instance
-export function getDatabase(): DatabaseClient {
-  if (!dbInstance) {
-    throw new Error('Database not initialized. Call createDatabaseClient first.');
-  }
-  return dbInstance;
+// Update getDatabase to initialize if needed
+export async function getDatabase(): Promise<DatabaseClient> {
+  return ensureDatabase();
 }
 
 /**

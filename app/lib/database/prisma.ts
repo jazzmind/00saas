@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { DatabaseClient, DatabaseError, OTP } from './types';
 import { Organization, User, OrganizationMembership } from '../types';
+import type { SessionData } from '@/app/lib/types';
 
 export class PrismaDatabase implements DatabaseClient {
   private prisma: PrismaClient;
@@ -346,6 +347,63 @@ export class PrismaDatabase implements DatabaseClient {
     try {
       await this.prisma.otp.deleteMany({
         where: { expiresAt: { lt: new Date() } },
+      });
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+
+  // Session operations
+  async createSession(session: SessionData): Promise<void> {
+    try {
+      await this.prisma.session.create({
+        data: session
+      });
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  async getSession(id: string): Promise<SessionData | null> {
+    try {
+      return await this.prisma.session.findUnique({
+        where: { id }
+      });
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  async updateSession(id: string, data: Partial<SessionData>): Promise<void> {
+    try {
+      await this.prisma.session.update({
+        where: { id },
+        data
+      });
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  async deleteSession(id: string): Promise<void> {
+    try {
+      await this.prisma.session.delete({
+        where: { id }
+      });
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  async deleteExpiredSessions(): Promise<void> {
+    try {
+      await this.prisma.session.deleteMany({
+        where: {
+          expiresAt: {
+            lte: new Date()
+          }
+        }
       });
     } catch (error) {
       this.handleError(error);

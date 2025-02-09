@@ -22,7 +22,8 @@ import { sendEmail } from '@/app/lib/email';
 
 interface SendOTPOptions {
   email: string;
-  redirectPath?: string; // Where to redirect after verification
+  userId: string;
+  redirectPath?: string;
   purpose: 'signup' | 'login' | 'verification';
 }
 
@@ -51,7 +52,9 @@ function generateToken(email: string, otp: string): string {
 /**
  * Sends an OTP via email and stores it in the database
  */
-export async function sendOTP({ email, redirectPath = '/dashboard', purpose }: SendOTPOptions) {
+export async function sendOTP({ email, userId, redirectPath = '/dashboard', purpose }: SendOTPOptions) {
+  console.log('Starting sendOTP:', { email, userId, purpose });
+  
   if (!email) {
     throw new Error('Email is required');
   }
@@ -59,9 +62,11 @@ export async function sendOTP({ email, redirectPath = '/dashboard', purpose }: S
   // Generate OTP
   const otp = generateOTP();
   const token = generateToken(email, otp);
+  console.log('Generated OTP and token');
   
   // Get or create user
   let user = await getUserByEmail(email);
+  console.log('Found user:', user);
   
   if (!user && purpose === 'signup') {
     user = await createUser(email, 'viewer');
@@ -72,29 +77,40 @@ export async function sendOTP({ email, redirectPath = '/dashboard', purpose }: S
   // Store token record
   const record: OTP = {
     token,
-    userId: user.id,
+    userId,
     redirectPath,
     purpose,
     createdAt: new Date(),
-    expiresAt: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes expiry
+    expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+    attempts: 0
   };
   
+  console.log('Storing OTP record');
   await createOTP(record);
+  console.log('OTP record stored');
 
   // Create verification URL
   const verifyUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/magiclink/${token}`;
+  console.log('Verification URL:', verifyUrl);
   
   // Send email
   const emailTemplate = purpose === 'signup' ? 'signup-otp' : 'login-otp';
-  await sendEmail({
-    to: email,
-    template: emailTemplate,
-    data: {
-      otp,
-      verifyUrl,
-      expiresIn: '15 minutes'
-    }
-  });
+  console.log('Sending email with template:', emailTemplate);
+  try {
+    await sendEmail({
+      to: email,
+      template: emailTemplate,
+      data: {
+        otp,
+        verifyUrl,
+        expiresIn: '15 minutes'
+      }
+    });
+    console.log('Email sent successfully');
+  } catch (error) {
+    console.error('Failed to send email:', error);
+    throw error;
+  }
 
   return { success: true };
 }
@@ -103,16 +119,14 @@ export async function sendOTP({ email, redirectPath = '/dashboard', purpose }: S
  * Verifies a token (from magic link)
  */
 export async function verifyToken(token: string) {
-  
   const record = await getOTPByToken(token);
-
+  console.log('Record:', record);
   if (!record) {
-    throw new Error('Invalid or expired link');
+    throw new Error('Invalid token');
   }
 
   if (record.expiresAt < new Date()) {
-    await deleteOTP(token);
-    throw new Error('Link has expired');
+    throw new Error('Token expired');
   }
 
   // Delete the OTP record
@@ -121,6 +135,7 @@ export async function verifyToken(token: string) {
   return {
     userId: record.userId,
     email: record.user.email,
+    purpose: record.purpose,
     redirectPath: record.redirectPath
   };
 }
@@ -130,6 +145,7 @@ export async function verifyToken(token: string) {
  */
 export async function verifyOTP(email: string, otp: string) {
   const token = generateToken(email, otp);
+  console.log('Token:', token); 
   return verifyToken(token);
 }
 

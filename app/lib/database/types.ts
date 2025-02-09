@@ -1,5 +1,6 @@
 import { Organization, User, OrganizationMembership } from '../types';
 import { Firestore } from 'firebase-admin/firestore';
+import type { SessionData } from '@/app/lib/types';
 
 export interface OTP {
   token: string;
@@ -8,7 +9,7 @@ export interface OTP {
   purpose: 'signup' | 'login' | 'verification';
   createdAt: Date;
   expiresAt: Date;
-  attempts?: number;
+  attempts: number;
 }
 
 export interface DatabaseClient {
@@ -43,6 +44,14 @@ export interface DatabaseClient {
   getOTP(token: string): Promise<(OTP & { user: User }) | null>;
   deleteOTP(token: string): Promise<void>;
   deleteExpiredOTPs(): Promise<void>;
+
+  // Session operations
+  createSession(session: SessionData): Promise<void>;
+  getSession(id: string): Promise<SessionData | null>;
+  updateSession(id: string, data: Partial<SessionData>): Promise<void>;
+  deleteSession(id: string): Promise<void>;
+  deleteExpiredSessions(): Promise<void>;
+
 }
 
 export interface DatabaseConfig {
@@ -54,4 +63,34 @@ export interface DatabaseConfig {
 export interface DatabaseError extends Error {
   code: string;
   cause: Error;
+}
+
+export interface CollectionReference<T = unknown> {
+  doc(id: string): DocumentReference<T>;
+  where(field: string, op: string, value: unknown): Query<T>;
+}
+
+export interface DocumentReference<T = unknown> {
+  get(): Promise<DocumentSnapshot<T>>;
+  set(data: T): Promise<void>;
+  update(data: Partial<T>): Promise<void>;
+  delete(): Promise<void>;
+}
+
+export interface DocumentSnapshot<T = unknown> {
+  data(): T | undefined;
+  ref: DocumentReference<T>;
+}
+
+export interface Query<T = unknown> {
+  get(): Promise<QuerySnapshot<T>>;
+}
+
+export interface QuerySnapshot<T = unknown> {
+  forEach(callback: (doc: DocumentSnapshot<T>) => void): void;
+}
+
+export interface WriteBatch {
+  delete(ref: DocumentReference<unknown>): WriteBatch;
+  commit(): Promise<void>;
 } 

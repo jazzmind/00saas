@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { getDatabase } from '@/app/lib/database';
+import { getUser } from '@/app/lib/database/userDatabase';
 import { sendOTP } from '@/app/lib/auth/emailOTP';
 
 /**
@@ -18,8 +18,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const db = getDatabase();
-    const user = await db.getUser(session.value);
+    const user = await getUser(session.value);
 
     if (!user) {
       return new Response(JSON.stringify({ error: 'User not found' }), {
@@ -37,6 +36,7 @@ export async function POST(req: NextRequest) {
 
     // Send verification OTP
     await sendOTP({
+      userId: user.id,
       email: user.email,
       purpose: 'verification',
     });

@@ -14,6 +14,7 @@ export interface User {
   createdAt: Date;
   updatedAt: Date;
   currentChallenge?: string | null;
+  passkeySnoozedUntil?: Date | null;
   authenticators?: Array<{
     credentialID: string;
     credentialPublicKey: string;
@@ -60,6 +61,17 @@ export interface SubscriptionPlan {
   price: number;
   billingPeriod: 'monthly' | 'yearly';
   stripePriceId: string;
+}
+
+export interface SessionData {
+  id: string;
+  userId: string;
+  organizationId: string | null;
+  createdAt: Date;
+  expiresAt: Date;
+  lastAccessedAt: Date;
+  userAgent: string | null;
+  ip: string | null;
 }
 
 /**

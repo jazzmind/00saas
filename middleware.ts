@@ -1,72 +1,148 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { verifyJWT } from './app/lib/auth/jwt';
 
-/**
- * Authentication Middleware
- * 
- * This middleware:
- * 1. Redirects authenticated users away from auth pages
- * 2. Redirects unauthenticated users to login
- * 3. Handles session validation
- */
-
-// Pages that don't require authentication
-const publicPages = ['/login', '/signup'];
-
-// Pages that are only accessible to unauthenticated users
-const authPages = ['/login', '/signup'];
+// Add paths that are publicly accessible without auth
+const publicPaths = [
+  // Auth-related paths
+  '/login',
+  '/signup',
+  '/verify',
+  '/magiclink',
+  
+  // Static assets and public resources
+  '/_next',
+  '/favicon.ico',
+  '/logo',
+  '/public',
+  
+  // Public pages
+  '/',
+  '/about',
+  '/contact',
+  
+  // Health checks
+  '/api/health',
+];
 
 export async function middleware(request: NextRequest) {
-  const session = request.cookies.get('session');
   const { pathname } = request.nextUrl;
 
-  // Skip middleware for API routes and static files
-  if (pathname.startsWith('/api/') || pathname.match(/\.(ico|png|jpg|jpeg|svg|css|js)$/)) {
+  // Skip auth check for public paths
+  if (publicPaths.some(path => pathname.startsWith(path))) {
     return NextResponse.next();
   }
 
-  // Check if user is authenticated
-  let isAuthenticated = false;
-  if (session?.value) {
-    try {
-      const response = await fetch(new URL('/api/check-auth', request.url), {
-        headers: {
-          Cookie: `session=${session.value}`,
-        },
-      });
-      isAuthenticated = response.ok;
-    } catch (error) {
-      // Invalid session
-      console.error('Session verification failed:', error);
-      isAuthenticated = false;
+  const sessionJWT = request.cookies.get('session')?.value;
+  
+  // No session cookie, handle as unauthenticated
+  if (!sessionJWT) {
+    return handleUnauthenticated(request);
+  }
+
+  // Verify JWT
+  const payload = await verifyJWT(sessionJWT);
+  
+  // JWT is invalid or expired
+  if (!payload) {
+    // Try to refresh session if it exists
+    if (sessionJWT) {
+      return await handleSessionRefresh(request, sessionJWT);
+    }
+    return handleUnauthenticated(request);
+  }
+
+  // Create response with authenticated context
+  const requestHeaders = new Headers(request.headers);
+  
+  if (pathname.startsWith('/api/')) {
+    // For API routes, set Authorization header with JWT
+    requestHeaders.set('Authorization', `Bearer ${sessionJWT}`);
+    requestHeaders.set('x-session-data', JSON.stringify({
+      userId: payload.userId,
+      organizationId: payload.organizationId,
+      sessionId: payload.sessionId
+    }));
+  } else {
+    // For pages, set user context in headers
+    requestHeaders.set('x-user-id', payload.userId);
+    if (payload.organizationId) {
+      requestHeaders.set('x-organization-id', payload.organizationId);
     }
   }
 
-  // Redirect authenticated users away from auth pages
-  if (isAuthenticated && authPages.includes(pathname)) {
-    return NextResponse.redirect(new URL('/home', request.url));
-  }
+  // Add the current path to headers for layouts
+  requestHeaders.set('x-pathname', pathname);
 
-  // Redirect unauthenticated users to login
-  if (!isAuthenticated && !publicPages.includes(pathname)) {
+
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
+}
+
+async function handleSessionRefresh(request: NextRequest, oldJWT: string) {
+  try {
+    const response = await fetch(`${request.nextUrl.origin}/api/auth/session`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        'jwt': oldJWT
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      return handleUnauthenticated(request);
+    }
+
+    const data = await response.json();
+    const newResponse = NextResponse.next();
+    
+    // Use the new JWT from the response
+    if (data.jwt) {
+      newResponse.cookies.set('session', data.jwt, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/'
+      });
+    }
+
+    return newResponse;
+
+  } catch (error) {
+    console.error('Session refresh error:', error);
+    return handleUnauthenticated(request);
+  }
+}
+
+function handleUnauthenticated(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  
+  // Check if this is a protected route
+  if (!publicPaths.some(path => pathname.startsWith(path))) {
+    // Redirect to login with return URL
     const loginUrl = new URL('/login', request.url);
-    loginUrl.searchParams.set('redirect', pathname);
+    loginUrl.searchParams.set('returnTo', pathname);
     return NextResponse.redirect(loginUrl);
   }
 
   return NextResponse.next();
 }
 
+// Configure paths that should trigger the middleware
 export const config = {
   matcher: [
     /*
      * Match all request paths except:
-     * 1. /api/ (API routes)
-     * 2. /_next/ (Next.js internals)
-     * 3. /_static (inside /public)
-     * 4. /_vercel (Vercel internals)
-     * 5. Static files (e.g. /favicon.ico, /sitemap.xml, /robots.txt)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public folder
      */
-    '/((?!api|_next|_static|_vercel|[\\w-]+\\.\\w+).*)',
+    '/((?!_next/static|_next/image|favicon.ico|public/).*)',
   ],
 }; 

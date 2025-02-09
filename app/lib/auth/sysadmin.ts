@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDatabase } from '@/app/lib/database';
+import { getUser } from '@/app/lib/database/userDatabase';
 
 /**
  * Sysadmin Authentication Module
@@ -22,8 +22,7 @@ export function isSysadmin(email: string): boolean {
 
 export async function verifySysadminSession(userId: string): Promise<boolean> {
   try {
-    const db = getDatabase();
-    const session = await db.getUser(userId);
+    const session = await getUser(userId);
     if (!session) return false;
 
     const now = new Date();
@@ -48,8 +47,8 @@ export async function requireSysadmin(req: NextRequest) {
   }
 
   // Get user from session
-  const db = getDatabase();
-  const sessionUser = await db.getUser(session.value);
+
+  const sessionUser = await getUser(session.value);
   if (!sessionUser) {
     return new NextResponse(JSON.stringify({ error: 'Unauthorized' }), {
       status: 401,

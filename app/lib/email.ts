@@ -14,11 +14,14 @@ interface EmailOptions {
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
   port: Number(process.env.EMAIL_PORT),
-  secure: true,
+  secure: process.env.EMAIL_SECURE === 'true',
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
+  tls: {
+    rejectUnauthorized: process.env.NODE_ENV === 'production'
+  }
 });
 
 const templates = {
@@ -56,13 +59,34 @@ export async function sendEmail({ to, template, data }: EmailOptions) {
     html: emailTemplate.html(data)
   };
 
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Development mode - verification details:');
-    console.log('URL:', data.verifyUrl);
-    console.log('OTP:', data.otp);
+  // Allow skipping email sending in development
+  const skipEmail = process.env.SKIP_EMAIL_IN_DEV === 'true' && process.env.NODE_ENV === 'development';
+
+  if (skipEmail) {
+    console.log('Development mode - skipping email send');
+    console.log('Email details:', {
+      to,
+      subject: mailOptions.subject,
+      verificationUrl: data.verifyUrl,
+      otp: data.otp
+    });
     return { success: true };
   }
 
-  await transporter.sendMail(mailOptions);
-  return { success: true };
+  // Actually send the email in production or if SKIP_EMAIL_IN_DEV is false
+  try {
+    await transporter.sendMail(mailOptions);
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to send email:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Email details that would have been sent:', {
+        to,
+        subject: mailOptions.subject,
+        verificationUrl: data.verifyUrl,
+        otp: data.otp
+      });
+    }
+    throw error;
+  }
 } 

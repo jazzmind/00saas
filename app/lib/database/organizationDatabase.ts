@@ -9,12 +9,12 @@ import { getDatabase } from './index';
  */
 
 export async function getOrganization(id: string): Promise<Organization | null> {
-  const db = getDatabase();
+  const db = await getDatabase();
   return db.getOrganization(id);
 }
 
 export async function getOrganizationBySlug(slug: string): Promise<Organization | null> {
-  const db = getDatabase();
+  const db = await getDatabase();
   return db.getOrganizationBySlug(slug);
 }
 
@@ -23,7 +23,7 @@ export async function createOrganization(
   creatorUserId: string,
   plan: 'free' | 'pro' | 'enterprise' = 'free'
 ): Promise<Organization> {
-  const db = getDatabase();
+  const db = await getDatabase();
   
   // Create the organization
   const slug = name.toLowerCase().replace(/[^a-z0-9]/g, '-');
@@ -53,7 +53,7 @@ export async function updateOrganization(
   userId: string,
   updates: Partial<Organization>
 ): Promise<Organization> {
-  const db = getDatabase();
+  const db = await getDatabase();
 
   // Verify user has admin/owner access
   const membership = await db.getMembership(userId, id);
@@ -65,7 +65,7 @@ export async function updateOrganization(
 }
 
 export async function deleteOrganization(id: string, userId: string): Promise<void> {
-  const db = getDatabase();
+  const db = await getDatabase();
 
   // Verify user is owner
   const membership = await db.getMembership(userId, id);
@@ -82,7 +82,7 @@ export async function addUserToOrganization(
   userToAddId: string,
   role: 'owner' | 'admin' | 'member' | 'viewer'
 ): Promise<void> {
-  const db = getDatabase();
+  const db = await getDatabase();
 
   // Verify adding user has permission
   const adderMembership = await db.getMembership(addedByUserId, orgId);
@@ -109,7 +109,7 @@ export async function updateUserRole(
   userToUpdateId: string,
   newRole: Role
 ): Promise<void> {
-  const db = getDatabase();
+  const db = await getDatabase();
 
   // Verify updating user has permission
   const updaterMembership = await db.getMembership(updatedByUserId, orgId);
@@ -138,7 +138,7 @@ export async function removeUserFromOrganization(
   removedByUserId: string,
   userToRemoveId: string
 ): Promise<void> {
-  const db = getDatabase();
+  const db = await getDatabase();
 
   // Verify removing user has permission
   const removerMembership = await db.getMembership(removedByUserId, orgId);
@@ -162,17 +162,17 @@ export async function removeUserFromOrganization(
 }
 
 export async function getUserOrganizations(userId: string): Promise<Organization[]> {
-  const db = getDatabase();
+  const db = await getDatabase();
   return db.getUserOrganizations(userId);
 }
 
 export async function getOrganizationMembers(organizationId: string): Promise<User[]> {
-  const db = getDatabase();
+  const db = await getDatabase();
   return db.getOrganizationMembers(organizationId);
 }
 
 export async function searchOrganizations(query: string): Promise<Organization[]> {
-  const db = getDatabase();
+  const db = await getDatabase();
   return db.searchOrganizations(query);
 }
 

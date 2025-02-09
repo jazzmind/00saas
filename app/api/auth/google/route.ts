@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
-import { getDatabase } from '@/app/lib/database';
+import { getUserByEmail, createUser } from '@/app/lib/database/userDatabase';
 import { OAuth2Client } from 'google-auth-library';
-import { v4 as uuidv4 } from 'uuid';
+import { createSession } from '@/app/lib/session';
 
 const client = new OAuth2Client(
   process.env.GOOGLE_CLIENT_ID,
@@ -41,25 +41,17 @@ export async function POST(req: NextRequest) {
         throw new Error('Invalid token payload');
       }
 
-      const db = getDatabase();
-      let user = await db.getUserByEmail(payload.email);
+      let user = await getUserByEmail(payload.email);
       let isNewUser = false;
 
       if (!user) {
         // Create new user
-        user = await db.createUser({
-          email: payload.email,
-          name: payload.name || payload.email.split('@')[0],
-          emailVerified: payload.email_verified || false,
-          organizations: [],
-        });
+        user = await createUser(payload.email, 'owner');
         isNewUser = true;
       }
 
       // Create a session
-      const sessionId = uuidv4();
-      const expiresIn = 30 * 24 * 60 * 60 * 1000; // 30 days
-
+      await createSession(user.id);
       return new Response(JSON.stringify({
         user: {
           id: user.id,
@@ -71,7 +63,6 @@ export async function POST(req: NextRequest) {
         status: 200,
         headers: {
           'Content-Type': 'application/json',
-          'Set-Cookie': `session=${sessionId}; Max-Age=${expiresIn}; Path=/; HttpOnly; ${process.env.NODE_ENV === 'production' ? 'Secure;' : ''} SameSite=Lax`,
         },
       });
     } catch (error) {

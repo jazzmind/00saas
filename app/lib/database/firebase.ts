@@ -1,6 +1,7 @@
 import { Firestore, Timestamp, DocumentData } from 'firebase-admin/firestore';
 import { DatabaseClient, DatabaseError, OTP } from './types';
 import { Organization, User, OrganizationMembership } from '../types';
+import type { SessionData } from '@/app/lib/types';
 
 export class FirebaseDatabase implements DatabaseClient {
   private db: Firestore;
@@ -60,7 +61,8 @@ export class FirebaseDatabase implements DatabaseClient {
       
       if (snapshot.empty) return null;
       const doc = snapshot.docs[0];
-      return this.convertTimestampToDate<User>(doc.data());
+      // need to add id to the data
+      return this.convertTimestampToDate<User>({ id: doc.id, ...doc.data() });
     } catch (error) {
       this.handleError(error as Error);
     }
@@ -321,6 +323,7 @@ export class FirebaseDatabase implements DatabaseClient {
 
   // OTP operations
   async createOTP(otp: OTP): Promise<OTP> {
+    console.log('Creating OTP:', otp);
     const docRef = this.db.collection('otps').doc(otp.token);
     const data = {
       ...otp,
@@ -369,6 +372,66 @@ export class FirebaseDatabase implements DatabaseClient {
     await this.db.collection('otps')
       .where('expiresAt', '<=', Timestamp.now())
       .get();
+  }
+
+  // Session operations
+  async createSession(session: SessionData): Promise<void> {
+    try {
+      const docRef = this.db.collection('sessions').doc(session.id);
+      await docRef.set({
+        ...session,
+        createdAt: Timestamp.fromDate(session.createdAt),
+        expiresAt: Timestamp.fromDate(session.expiresAt),
+        lastAccessedAt: Timestamp.fromDate(session.lastAccessedAt)
+      });
+    } catch (error) {
+      this.handleError(error as Error);
+    }
+  }
+
+  async getSession(id: string): Promise<SessionData | null> {
+    console.log('Getting session:', id);
+    try {
+      const doc = await this.db.collection('sessions').doc(id).get();
+      if (!doc.exists) return null;
+      return this.convertTimestampToDate<SessionData>(doc.data());
+    } catch (error) {
+      this.handleError(error as Error);
+    }
+  }
+
+  async updateSession(id: string, data: Partial<SessionData>): Promise<void> {
+    try {
+      const docRef = this.db.collection('sessions').doc(id);
+      await docRef.update({
+        ...data,
+        lastAccessedAt: Timestamp.fromDate(data.lastAccessedAt || new Date())
+      });
+    } catch (error) {
+      this.handleError(error as Error);
+    }
+  }
+
+  async deleteSession(id: string): Promise<void> {
+    try {
+      await this.db.collection('sessions').doc(id).delete();
+    } catch (error) {
+      this.handleError(error as Error);
+    }
+  }
+
+  async deleteExpiredSessions(): Promise<void> {
+    try {
+      const snapshot = await this.db.collection('sessions')
+        .where('expiresAt', '<=', Timestamp.now())
+        .get();
+      
+      const batch = this.db.batch();
+      snapshot.docs.forEach(doc => batch.delete(doc.ref));
+      await batch.commit();
+    } catch (error) {
+      this.handleError(error as Error);
+    }
   }
 } 
 
