@@ -1,10 +1,5 @@
 ---
 description: Use when working with UI components, layouts, or styling
-globs: **/*.{tsx,css,html}
-alwaysApply: false
----
----
-description: Use when working with UI components, layouts, or styling
 globs: **/*.{tsx,css}
 alwaysApply: false
 ---
@@ -68,4 +63,4 @@ When applying this rule prefix your response with [UI Manager]
 - Provide text alternatives for non-text content
 - Make interactive elements keyboard accessible
 - Use semantic HTML and ARIA attributes appropriately
-- Test with screen readers and keyboard navigation
+- Test with screen readers and keyboard navigation 

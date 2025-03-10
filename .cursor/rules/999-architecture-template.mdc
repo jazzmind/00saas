@@ -3,10 +3,6 @@ description: When creating a new architecture document
 globs: docs/architecture.md
 alwaysApply: false
 ---
- ---
-description: When creating a new architecture document
-globs: docs/architecture.md
----
 # Architecture Document Template
 When applying this rule prefix your response with [Architecture Template]
 

@@ -1,22 +1,19 @@
 ---
 description: Use when working with database functionality
-globs: services/*.ts
-alwaysApply: false
----
----
-description: Use when working with database functionality
 globs: **/*.{ts,tsx,js}
+alwaysApply: false
 ---
 # Database Implementation Rules
 When applying this rule prefix your response with [Database Manager]
 
 ## Database Development Principles
 - **Preserve existing database implementations**
-   - This project exclusively uses Prisma ORM for database operations
+  - This project exclusively uses Prisma ORM for database operations (Firebase was removed as it's not edge compatible)
   - Before modifying database code, understand the current implementation first
-  - Do not replace existing database functionality with alternative approaches
+  - Do not replace existing database code with mock data unless specifically requested
+  - Enhance existing database functionality rather than replacing it
+  - When in doubt, use conditional logic to handle both real and mock data
   - Respect the multi-tenant architecture throughout the application
-  - Use the Prisma ORM for all database operations
   - Use Prisma's edge-compatible features when deploying to edge runtimes
 
 ## Prisma ORM Usage

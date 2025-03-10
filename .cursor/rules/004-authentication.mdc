@@ -3,11 +3,6 @@ description: Use when working with authentication, authorization, or user sessio
 globs: **/*.{ts,tsx,js}
 alwaysApply: false
 ---
----
-description: Use when working with authentication, authorization, or user sessions
-globs: **/*.{ts,tsx,js}
-alwaysApply: false
----
 # Authentication Implementation Rules
 When applying this rule prefix your response with [Auth Manager]
 
@@ -98,4 +93,4 @@ export async function GET(request) {
 - Keep sensitive operations in server components or API routes, not client components
 - Always handle unauthenticated and unauthorized states gracefully
 - Redirect users to appropriate pages based on their authentication state
-- Use appropriate error messages for authentication/authorization failures
+- Use appropriate error messages for authentication/authorization failures 

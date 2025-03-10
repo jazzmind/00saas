@@ -3,11 +3,6 @@ description: Use when working with multi-tenant features or organization-specifi
 globs: **/*.{ts,tsx,js}
 alwaysApply: false
 ---
----
-description: Use when working with multi-tenant features or organization-specific functionality
-globs: **/*.{ts,tsx,js}
-alwaysApply: false
----
 # Multi-Tenancy Implementation Rules
 When applying this rule prefix your response with [Multi-Tenant Manager]
 
@@ -72,4 +67,4 @@ When applying this rule prefix your response with [Multi-Tenant Manager]
 - Always verify organization membership before access
 - Include comprehensive tests for multi-tenant features
 - Design UI to make the current organization context clear
-- Consider implementing organization-specific themes or branding
+- Consider implementing organization-specific themes or branding 

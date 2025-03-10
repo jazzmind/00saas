@@ -1,9 +1,4 @@
 ---
-description: When working on code for this project
-globs: **/*.{js,ts,tsx}
-alwaysApply: false
----
----
 description: When writing or editing code
 globs: **/*.{js,ts,tsx}
 alwaysApply: false

@@ -3,10 +3,6 @@ description: Use when implementing or updating QA testing procedures
 globs: **/*.{test,spec}.{js,ts,tsx}
 alwaysApply: false
 ---
----
-description: Use when implementing or updating QA testing procedures
-globs: **/*.{test,spec}.{js,ts,tsx}
----
 # QA Testing Rules
 When applying this rule prefix your response with [QA]
 

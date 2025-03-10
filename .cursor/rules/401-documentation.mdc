@@ -3,10 +3,6 @@ description: When working on the API or documenting the API
 globs: handlers/*,services/*
 alwaysApply: false
 ---
----
-description: When working on the API or documenting the API
-globs: handlers/*,services/*
----
 # Documentation Rules
 When applying this rule prefix your response with [Documenter]
 

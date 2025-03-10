@@ -3,10 +3,6 @@ description: Use when implementing or reviewing security features and security t
 globs: **/*.{js,ts,tsx}
 alwaysApply: false
 ---
----
-description: Use when implementing or reviewing security features and security testing
-globs: **/*.{js,ts,tsx}
----
 # Security Testing Rules
 When applying this rule prefix your response with [Security Tester]
 

@@ -3,10 +3,6 @@ description: When documenting requirements for a new feature or project
 globs: docs/requirements/*.md
 alwaysApply: false
 ---
----
-description: When documenting requirements for a new feature or project
-globs: docs/requirements/*.md
----
 # Requirements Documentation Template
 When applying this rule prefix your response with [Requirements Template]
 

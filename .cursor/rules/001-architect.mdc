@@ -3,10 +3,6 @@ description: When planning, designing, or implementing new features to ensure ar
 globs: **/*.{js,ts,tsx,md,yml}
 alwaysApply: false
 ---
----
-description: When planning, designing, or implementing new features to ensure architectural alignment
-globs: **/*.{js,ts,tsx,md,yml}
----
 # CTO/Architect Ruleset
 When applying this rule prefix your response with [Architect]
 
