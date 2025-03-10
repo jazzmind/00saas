@@ -1,0 +1,71 @@
+---
+description: Use when working with UI components, layouts, or styling
+globs: **/*.{tsx,css,html}
+alwaysApply: false
+---
+---
+description: Use when working with UI components, layouts, or styling
+globs: **/*.{tsx,css}
+alwaysApply: false
+---
+# UI Component Implementation Rules
+When applying this rule prefix your response with [UI Manager]
+
+## UI Framework Overview
+- This project uses Next.js 15+ with the App Router architecture
+- Styling with Tailwind CSS
+- Component organization follows Next.js conventions
+- Server and Client Components are used appropriately
+
+## Component Structure
+- `/app/components/` - Shared components used across multiple pages
+- `/app/[feature]/components/` - Feature-specific components
+- Pages are organized following the App Router conventions
+- Layout components manage shared UI elements
+
+## Component Best Practices
+- Use Server Components by default
+- Only use Client Components when necessary (interactivity, hooks, browser APIs)
+- Use "use client" directive at the top of client component files
+- Keep components focused on a single responsibility
+- Use composition over inheritance
+- Extract reusable UI elements into separate components
+
+## Styling Guidelines
+- Use Tailwind CSS classes for styling
+- Follow mobile-first responsive design
+- Use CSS variables for theme colors and values
+- Maintain consistent spacing using Tailwind's spacing scale
+- Use semantic HTML elements with appropriate ARIA attributes
+
+## Form Handling
+- Use React Hook Form for complex forms
+- Implement proper form validation with error messages
+- Handle loading, error, and success states appropriately
+- Consider accessibility in form design (labels, errors, focus states)
+
+## Data Fetching
+- Use React Server Components for initial data fetching
+- Use SWR or React Query for client-side data fetching
+- Handle loading and error states with appropriate UI feedback
+- Implement optimistic UI updates when appropriate
+
+## Multi-Tenant UI Considerations
+- Ensure UI respects the current organization context
+- Display appropriate content based on user permissions
+- Consider organization-specific theming if needed
+- Clearly indicate which organization the user is currently viewing
+
+## Admin Interfaces
+- Follow consistent patterns between system admin and tenant admin interfaces
+- Use data tables for list views with appropriate actions
+- Implement proper filtering, sorting, and pagination
+- Provide clear feedback for administrative actions
+- Confirm destructive actions before proceeding
+
+## Accessibility
+- Ensure sufficient color contrast
+- Provide text alternatives for non-text content
+- Make interactive elements keyboard accessible
+- Use semantic HTML and ARIA attributes appropriately
+- Test with screen readers and keyboard navigation

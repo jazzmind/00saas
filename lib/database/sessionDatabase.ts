@@ -1,5 +1,5 @@
 import { getDatabase } from './index';
-import type { SessionData } from '@/app/lib/types';
+import type { SessionData } from '@/lib/types';
 
 export async function createSessionInDb(session: SessionData) {
   const db = await getDatabase();

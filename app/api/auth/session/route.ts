@@ -1,6 +1,8 @@
 import { NextRequest } from "next/server";
-import { getSession, createSession } from "@/app/lib/session";
-import { verifyJWT, createSessionJWT, setSessionCookie } from "@/app/lib/auth/jwt";
+import { getSession, createSession } from "@/lib/session";
+import { verifyJWT, createSessionJWT, setSessionCookie } from "@/lib/auth/jwt";
+import { getServerSession } from "@/lib/auth/getServerSession";
+import { auth } from "@/auth";
 
 // Get current session info
 export async function GET(req: NextRequest) {
@@ -145,5 +147,33 @@ export async function PUT(req: NextRequest) {
   } catch (error) {
     console.error('Session refresh error:', error);
     return new Response(null, { status: 500 });
+  }
+}
+
+export async function PATCH(req: NextRequest) {
+  try {
+    const session = await getServerSession();
+    if (!session?.user) return;
+
+    const body = await req.json();
+    const { organizationId } = body;
+
+    if (!organizationId) {
+      return Response.json({ error: 'Organization ID is required' }, { status: 400 });
+    }
+
+    // Update session
+    await auth().update({
+      ...session,
+      user: {
+        ...session.user,
+        organizationId
+      }
+    });
+
+    return Response.json({ success: true });
+  } catch (error) {
+    console.error('Session update error:', error);
+    return Response.json({ error: 'Failed to update session' }, { status: 500 });
   }
 } 

@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
-import { getDatabase } from '@/app/lib/database';
-import { requireSysadmin } from '@/app/lib/auth/sysadmin';
+import { getDatabase } from '@/lib/database';
+import { requireSysadmin } from '@/lib/auth/sysadmin';
 
 /**
  * Sysadmin API: Organizations Management

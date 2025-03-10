@@ -1,12 +1,12 @@
 import { NextRequest } from 'next/server';
-import { getUser, updateUser } from '@/app/lib/database/userDatabase';
+import { getUser, updateUser } from '@/lib/database/userDatabase';
 import { verifyRegistrationResponse } from '@simplewebauthn/server';
 import type { 
   VerifyRegistrationResponseOpts,
   VerifiedRegistrationResponse,
   RegistrationResponseJSON,
 } from '@simplewebauthn/server';
-import { getApiSession } from '@/app/lib/auth/getApiSession';
+import { getApiSession } from '@/lib/auth/getApiSession';
 const rpID = process.env.NEXT_PUBLIC_DOMAIN || 'localhost';
 const origin = process.env.NEXT_PUBLIC_ORIGIN || `https://${rpID}`;
 

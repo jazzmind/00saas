@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
-import { getUser, updateUser } from "@/app/lib/database/userDatabase";
-import { verifyOTP, verifyToken } from "@/app/lib/auth/emailOTP";
+import { getUser, updateUser } from "@/lib/database/userDatabase";
+import { verifyOTP, verifyToken } from "@/lib/auth/emailOTP";
 
 /**
  * API Route: Verify Email

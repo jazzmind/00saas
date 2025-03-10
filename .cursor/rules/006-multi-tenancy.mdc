@@ -1,0 +1,75 @@
+---
+description: Use when working with multi-tenant features or organization-specific functionality
+globs: **/*.{ts,tsx,js}
+alwaysApply: false
+---
+---
+description: Use when working with multi-tenant features or organization-specific functionality
+globs: **/*.{ts,tsx,js}
+alwaysApply: false
+---
+# Multi-Tenancy Implementation Rules
+When applying this rule prefix your response with [Multi-Tenant Manager]
+
+## Multi-Tenant Architecture Overview
+- This application uses an Organization-based multi-tenancy model
+- Each user can belong to one or more organizations with different roles
+- Data is isolated between organizations
+- System administrators can manage all organizations
+- Organization administrators manage their own organization
+
+## Core Multi-Tenant Models
+- Organization - Represents a tenant
+- OrganizationMember - Links users to organizations with roles
+- User - Can belong to multiple organizations
+
+## Tenant Isolation Principles
+- **Data Isolation**: Each organization's data is isolated from others
+- **Access Control**: Users can only access data from organizations they belong to
+- **Role-Based Permissions**: Different roles have different capabilities within an organization
+
+## Working with Organization Context
+- Session includes `organizationId` when a user is in an organization context
+- Always include organization filtering in database queries
+- Example: 
+  ```typescript
+  const data = await prisma.someModel.findMany({
+    where: { organizationId: session.user.organizationId }
+  });
+  ```
+
+## Organization Roles and Permissions
+- **OWNER**: Full control over the organization, can delete it
+- **ADMIN**: Can manage users and most settings
+- **MEMBER**: Regular access to organization resources
+
+## System vs. Organization Administration
+- System administrators (ADMIN role) can access all organizations
+- System admin interface is located at `/app/sysop/`
+- Organization admin interface is located at `/app/admin/`
+- Different permission checks apply to each
+
+## Implementing New Multi-Tenant Features
+1. **Data Model**: Include `organizationId` in relevant models
+2. **Access Control**: Check organization membership and roles
+3. **UI Considerations**: Make organization context clear to users
+4. **Testing**: Verify data isolation between organizations
+
+## Switching Between Organizations
+- Users may switch between organizations they belong to
+- When switching, update the session with the new organizationId
+- Ensure all subsequent requests use the correct organization context
+
+## Common Patterns
+- Middleware for organization-based route protection
+- Higher-order components for organization context
+- Organization-aware hooks for data fetching
+- Organization selector in the UI
+- Organization-specific settings and configurations
+
+## Best Practices
+- Never expose data across organization boundaries
+- Always verify organization membership before access
+- Include comprehensive tests for multi-tenant features
+- Design UI to make the current organization context clear
+- Consider implementing organization-specific themes or branding

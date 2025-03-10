@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
-import { getUserByEmail, createUser } from '@/app/lib/database/userDatabase';
+import { getUserByEmail, createUser } from '@/lib/database/userDatabase';
 import { OAuth2Client } from 'google-auth-library';
-import { createSession } from '@/app/lib/session';
+import { createSession } from '@/lib/session';
 
 const client = new OAuth2Client(
   process.env.GOOGLE_CLIENT_ID,

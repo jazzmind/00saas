@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
-import { getDatabase } from '@/app/lib/database';
-import { verifyOTP } from '@/app/lib/auth/emailOTP';
-import { isSysadmin } from '@/app/lib/auth/sysadmin';
+import { getDatabase } from '@/lib/database';
+import { verifyOTP } from '@/lib/auth/emailOTP';
+import { isSysadmin } from '@/lib/auth/sysadmin';
 
 /**
  * Sysadmin API: Verify OTP

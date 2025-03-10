@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
-import { sendOTP } from "@/app/lib/auth/emailOTP";
-import { getUserByEmail } from "@/app/lib/database/userDatabase";
+import { sendOTP } from "@/lib/auth/emailOTP";
+import { getUserByEmail } from "@/lib/database/userDatabase";
 
 export async function POST(req: NextRequest) {
   try {

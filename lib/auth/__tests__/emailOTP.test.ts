@@ -54,7 +54,7 @@ describe('Email OTP System', () => {
 
       expect(setDoc).toHaveBeenCalledWith(
         doc(expect.anything(), 'users', mockUser.id),
-        { currentOTP: 'test-uuid' },
+        { VerifyToken: 'test-uuid' },
         { merge: true },
       );
 
@@ -71,7 +71,7 @@ describe('Email OTP System', () => {
   describe('verifyOTP', () => {
     it('should return false if no OTP exists', async () => {
       (getDoc as jest.Mock).mockResolvedValueOnce({
-        data: () => ({ currentOTP: null }),
+        data: () => ({ VerifyToken: null }),
       });
 
       const result = await verifyOTP(mockUser.id, '123456');
@@ -81,7 +81,7 @@ describe('Email OTP System', () => {
     it('should return false if OTP has expired', async () => {
       (getDoc as jest.Mock)
         .mockResolvedValueOnce({
-          data: () => ({ currentOTP: 'test-otp' }),
+          data: () => ({ VerifyToken: 'test-otp' }),
         })
         .mockResolvedValueOnce({
           data: () => ({
@@ -98,7 +98,7 @@ describe('Email OTP System', () => {
     it('should return false if too many attempts', async () => {
       (getDoc as jest.Mock)
         .mockResolvedValueOnce({
-          data: () => ({ currentOTP: 'test-otp' }),
+          data: () => ({ VerifyToken: 'test-otp' }),
         })
         .mockResolvedValueOnce({
           data: () => ({
@@ -115,7 +115,7 @@ describe('Email OTP System', () => {
     it('should return false if code does not match', async () => {
       (getDoc as jest.Mock)
         .mockResolvedValueOnce({
-          data: () => ({ currentOTP: 'test-otp' }),
+          data: () => ({ VerifyToken: 'test-otp' }),
         })
         .mockResolvedValueOnce({
           data: () => ({
@@ -137,7 +137,7 @@ describe('Email OTP System', () => {
     it('should return true if code matches', async () => {
       (getDoc as jest.Mock)
         .mockResolvedValueOnce({
-          data: () => ({ currentOTP: 'test-otp' }),
+          data: () => ({ VerifyToken: 'test-otp' }),
         })
         .mockResolvedValueOnce({
           data: () => ({
@@ -152,7 +152,7 @@ describe('Email OTP System', () => {
       expect(deleteDoc).toHaveBeenCalled();
       expect(setDoc).toHaveBeenCalledWith(
         doc(expect.anything(), 'users', mockUser.id),
-        { currentOTP: null },
+        { VerifyToken: null },
         { merge: true },
       );
     });

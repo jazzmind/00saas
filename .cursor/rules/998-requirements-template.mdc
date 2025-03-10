@@ -1,0 +1,120 @@
+---
+description: When documenting requirements for a new feature or project
+globs: docs/requirements/*.md
+alwaysApply: false
+---
+---
+description: When documenting requirements for a new feature or project
+globs: docs/requirements/*.md
+---
+# Requirements Documentation Template
+When applying this rule prefix your response with [Requirements Template]
+
+## Requirements Document Structure
+
+```md
+# [Feature/Project Name] Requirements
+
+## Overview
+- **Purpose**: [Brief description of the feature/project purpose]
+- **Project Objective**: [Rapid Prototype | Stable MVP | Production | Legacy Improvement]
+- **Target Users**: [Who will use this feature/capability]
+- **Business Value**: [Why this is important]
+
+## Functional Requirements
+| ID  | Requirement | Priority | Acceptance Criteria |
+|-----|-------------|----------|---------------------|
+| F1  | [Description] | [High/Medium/Low] | [Measurable criteria] |
+| F2  | [Description] | [High/Medium/Low] | [Measurable criteria] |
+
+## Non-Functional Requirements
+| ID  | Type | Requirement | Acceptance Criteria |
+|-----|------|-------------|---------------------|
+| NF1 | Performance | [Description] | [Measurable criteria] |
+| NF2 | Security | [Description] | [Measurable criteria] |
+| NF3 | Reliability | [Description] | [Measurable criteria] |
+| NF4 | Scalability | [Description] | [Measurable criteria] |
+
+## API Contracts
+### [Endpoint Name]
+- **URL**: [URL pattern]
+- **Method**: [HTTP method]
+- **Authentication**: [Required/Optional, type]
+- **Request Parameters**:
+  ```json
+  {
+    "param1": "value1",
+    "param2": "value2"
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "field1": "value1",
+    "field2": "value2"
+  }
+  ```
+- **Error Responses**:
+  ```json
+  {
+    "error": "error_code",
+    "message": "Error description"
+  }
+  ```
+
+## Data Models
+### [Model Name]
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| field1 | string | Yes | [Description] |
+| field2 | number | No | [Description] |
+
+## User Flows
+1. [Step 1 description]
+2. [Step 2 description]
+3. [Step 3 description]
+
+## Testing Strategy
+- **Unit Tests**:
+  - [Test scenarios]
+- **Integration Tests**:
+  - [Test scenarios]
+- **Security Tests**:
+  - [Test scenarios]
+- **Performance Tests**:
+  - [Test scenarios]
+
+## Dependencies
+- [Internal/external dependencies]
+- [Third-party services]
+- [Other systems]
+
+## Constraints
+- [Technical constraints]
+- [Business constraints]
+- [Security constraints]
+
+## Assumptions
+- [Key assumptions made]
+
+## Open Questions
+- [Questions that need resolution]
+```
+
+## Documentation Guidelines
+
+1. **Be Specific**: Requirements should be clear and unambiguous
+2. **Be Measurable**: Include acceptance criteria that can be verified
+3. **Prioritize**: Identify which requirements are most important
+4. **Reference Architecture**: Ensure alignment with architecture document
+5. **Keep Updated**: Update as requirements change
+
+## Review Process
+
+Before implementation:
+
+1. Review with stakeholders
+2. Validate against architecture
+3. Check for missing requirements
+4. Assess technical feasibility
+5. Verify testability

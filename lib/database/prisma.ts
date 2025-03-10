@@ -1,7 +1,9 @@
 import { PrismaClient } from '@prisma/client';
 import { DatabaseClient, DatabaseError, OTP } from './types';
 import { Organization, User, OrganizationMembership } from '../types';
-import type { SessionData } from '@/app/lib/types';
+import type { SessionData } from '@/lib/types';
+
+export const runtime = 'edge';
 
 export class PrismaDatabase implements DatabaseClient {
   private prisma: PrismaClient;
@@ -18,38 +20,42 @@ export class PrismaDatabase implements DatabaseClient {
   }
 
   // User operations
-  async getUser(id: string): Promise<(User & { currentOTP?: string | null }) | null> {
+  async getUser(id: string): Promise<(User & { verification?: string | null }) | null> {
     try {
       const user = await this.prisma.user.findUnique({
         where: { id },
         include: {
           organizations: true,
-          currentOTP: true,
+          verification: true,
+          authenticator: true,
         },
       });
       if (!user) return null;
       return {
         ...user,
-        currentOTP: user.currentOTP?.id || null,
+        verification: user.verification || null,
+        authenticator: user.authenticator || null,
       };
     } catch (error) {
       this.handleError(error);
     }
   }
 
-  async getUserByEmail(email: string): Promise<(User & { currentOTP?: string | null }) | null> {
+  async getUserByEmail(email: string): Promise<(User & { verification?: string | null }) | null> {
     try {
       const user = await this.prisma.user.findUnique({
         where: { email },
         include: {
           organizations: true,
-          currentOTP: true,
+          verification: true,
+          authenticator: true,
         },
       });
       if (!user) return null;
       return {
         ...user,
-        currentOTP: user.currentOTP?.id || null,
+        verification: user.verification || null,
+        authenticator: user.authenticator || null,
       };
     } catch (error) {
       this.handleError(error);
@@ -62,8 +68,10 @@ export class PrismaDatabase implements DatabaseClient {
         data: {
           ...user,
           organizations: { create: [] },
+          authenticator: { create: [] },
+          verification: { create: [] },
         },
-        include: { organizations: true },
+        include: { organizations: true, authenticator: true, verification: true },
       });
       return created as User;
     } catch (error) {
@@ -71,19 +79,20 @@ export class PrismaDatabase implements DatabaseClient {
     }
   }
 
-  async updateUser(id: string, data: Partial<User> & { currentOTP?: string | null }): Promise<User> {
+  async updateUser(id: string, data: Partial<User> & { verification?: string | null, authenticator?: string | null }): Promise<User> {
     try {
-      const { currentOTP, ...userData } = data;
+      const updateData = { ...data };
+      // Only include relationship fields if they're explicitly provided
+      if ('verification' in data) updateData.verification = data.verification;
+      if ('authenticator' in data) updateData.authenticator = data.authenticator;
+
       const updated = await this.prisma.user.update({
         where: { id },
-        data: {
-          ...userData,
-          currentOTP: currentOTP ? {
-            connect: { id: currentOTP }
-          } : undefined,
-        },
+        data: updateData,
         include: {
           organizations: true,
+          verification: true,
+          authenticator: true,
         },
       });
       return updated;

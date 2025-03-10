@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { getUser, updateUser } from '@/app/lib/database/userDatabase';
+import { getUser, updateUser } from '@/lib/database/userDatabase';
 import { generateRegistrationOptions } from '@simplewebauthn/server';
 import type { GenerateRegistrationOptionsOpts } from '@simplewebauthn/server';
 

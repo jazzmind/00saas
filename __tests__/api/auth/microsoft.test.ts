@@ -1,9 +1,9 @@
 import { NextRequest } from 'next/server';
-import { adminAuth } from '@/app/lib/firebase-admin';
+import { adminAuth } from '@/lib/firebase-admin';
 import { GET } from '@/app/api/auth/microsoft/route';
 
 // Mock Firebase Admin
-jest.mock('@/app/lib/firebase-admin', () => ({
+jest.mock('@/lib/firebase-admin', () => ({
   adminAuth: {
     getUserByEmail: jest.fn(),
     createUser: jest.fn(),

@@ -1,0 +1,63 @@
+---
+description: When working on code for this project
+globs: **/*.{js,ts,tsx}
+alwaysApply: false
+---
+---
+description: When writing or editing code
+globs: **/*.{js,ts,tsx}
+alwaysApply: false
+---
+# Project Rules
+When applying this rule prefix your response with [Project Manager]
+
+## Project Overview
+This project is a multi-tenant SaaS application template built with Next.js 15, Next-Auth v5 (beta), and Prisma ORM. It provides a ready-to-use foundation for building SaaS applications with multi-tenancy support.
+
+## Key Technologies
+- **Next.js 15**: App Router, React Server Components
+- **Authentication**: Next-Auth v5 (beta) with email, passkey and session-based auth
+- **Database**: Prisma ORM (supporting PostgreSQL, MySQL, MongoDB, etc.)
+- **Styling**: Tailwind CSS
+
+## Existing Functionality
+1. **Multi-Tenant Architecture**
+   - Organization model for tenant separation
+   - User-to-Organization relationships with role-based permissions
+
+2. **Authentication System**
+   - Email OTP login
+   - Passkey (WebAuthn) support
+   - Session management
+   - JWT-based authentication
+
+3. **Admin Interfaces**
+   - System Admin (sysop) dashboard for managing all tenants/organizations
+   - Tenant Admin dashboard for organization administrators
+   - User management within organizations
+
+4. **User Roles and Permissions**
+   - System-level roles (USER, ADMIN)
+   - Organization-level roles (OWNER, ADMIN, MEMBER)
+
+## Important Guidelines
+1. **DO NOT reinvent existing functionality**. Use the built-in auth, multi-tenancy, and user management features.
+2. **Respect the project structure**:
+   - `/app` - Next.js App Router pages and components
+   - `/app/admin` - Tenant admin interfaces
+   - `/app/sysop` - System admin interfaces
+   - `/prisma` - Database schema and migrations
+   - `/lib` - Shared utility functions
+
+3. **Database Operations**:
+   - Always use Prisma for database operations
+   - Maintain multi-tenant data isolation
+   - Include organizationId in queries where appropriate
+   - Use edge-compatible database features
+   
+4. **Authentication**:
+   - Use the existing auth.ts configuration
+   - Access user context via the Session object
+   - Respect role-based permissions
+
+This template provides a complete foundation for multi-tenant SaaS applications. Extend it with new features rather than modifying the core architecture.

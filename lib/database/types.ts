@@ -1,6 +1,5 @@
 import { Organization, User, OrganizationMembership } from '../types';
-import { Firestore } from 'firebase-admin/firestore';
-import type { SessionData } from '@/app/lib/types';
+import type { SessionData } from '@/lib/types';
 
 export interface OTP {
   token: string;
@@ -14,10 +13,10 @@ export interface OTP {
 
 export interface DatabaseClient {
   // User operations
-  getUser(id: string): Promise<(User & { currentOTP?: string | null }) | null>;
-  getUserByEmail(email: string): Promise<(User & { currentOTP?: string | null }) | null>;
+  getUser(id: string): Promise<(User & { VerifyToken?: string | null }) | null>;
+  getUserByEmail(email: string): Promise<(User & { VerifyToken?: string | null }) | null>;
   createUser(user: Omit<User, 'id' | 'createdAt' | 'updatedAt'>): Promise<User>;
-  updateUser(id: string, data: Partial<User> & { currentOTP?: string | null }): Promise<User>;
+  updateUser(id: string, data: Partial<User> & { VerifyToken?: string | null }): Promise<User>;
   deleteUser(id: string): Promise<void>;
 
   // Organization operations
@@ -42,7 +41,7 @@ export interface DatabaseClient {
   // OTP operations
   createOTP(record: OTP): Promise<OTP>;
   getOTP(token: string): Promise<(OTP & { user: User }) | null>;
-  deleteOTP(token: string): Promise<void>;
+  deleteOTP(id: string): Promise<void>;
   deleteExpiredOTPs(): Promise<void>;
 
   // Session operations
@@ -55,42 +54,11 @@ export interface DatabaseClient {
 }
 
 export interface DatabaseConfig {
-  type: 'firebase' | 'prisma';
+  type: 'prisma';
   url?: string; // Database URL for Prisma
-  firebaseAdmin?: Firestore; // Firebase admin instance
 }
 
 export interface DatabaseError extends Error {
   code: string;
   cause: Error;
-}
-
-export interface CollectionReference<T = unknown> {
-  doc(id: string): DocumentReference<T>;
-  where(field: string, op: string, value: unknown): Query<T>;
-}
-
-export interface DocumentReference<T = unknown> {
-  get(): Promise<DocumentSnapshot<T>>;
-  set(data: T): Promise<void>;
-  update(data: Partial<T>): Promise<void>;
-  delete(): Promise<void>;
-}
-
-export interface DocumentSnapshot<T = unknown> {
-  data(): T | undefined;
-  ref: DocumentReference<T>;
-}
-
-export interface Query<T = unknown> {
-  get(): Promise<QuerySnapshot<T>>;
-}
-
-export interface QuerySnapshot<T = unknown> {
-  forEach(callback: (doc: DocumentSnapshot<T>) => void): void;
-}
-
-export interface WriteBatch {
-  delete(ref: DocumentReference<unknown>): WriteBatch;
-  commit(): Promise<void>;
 } 

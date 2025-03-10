@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { verifyToken } from '@/app/lib/auth/emailOTP';
+import { verifyToken } from '@/lib/auth/emailOTP';
 import { cookies } from 'next/headers';
 
 export default async function MagicLinkPage({ params }: { params: { token: string } }) {

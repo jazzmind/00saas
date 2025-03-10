@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { getUser } from "@/app/lib/database/userDatabase";
+import { getUser } from "@/lib/database/userDatabase";
 
 export async function POST(req: NextRequest) {
   try {

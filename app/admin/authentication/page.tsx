@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Organization } from '@/app/lib/types';
 
 interface AuthSettings {
   saml: {

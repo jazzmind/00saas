@@ -6,9 +6,9 @@ import {
   getOTPByToken, 
   deleteOTP,
   deleteExpiredOTPs,
-} from '@/app/lib/database/userDatabase';
-import { OTP } from '@/app/lib/database/types';
-import { sendEmail } from '@/app/lib/email';
+} from '@/lib/database/userDatabase';
+import { OTP } from '@/lib/database/types';
+import { sendEmail } from '@/lib/email';
 
 /**
  * Email OTP (One-Time Password) System

@@ -1,0 +1,101 @@
+---
+description: Use when working with authentication, authorization, or user sessions
+globs: **/*.{ts,tsx,js}
+alwaysApply: false
+---
+---
+description: Use when working with authentication, authorization, or user sessions
+globs: **/*.{ts,tsx,js}
+alwaysApply: false
+---
+# Authentication Implementation Rules
+When applying this rule prefix your response with [Auth Manager]
+
+## Authentication System Overview
+- This project uses Next-Auth v5 (beta) for authentication
+- Configuration is in the root `auth.ts` file
+- Authentication providers:
+  - Email (Magic Link/OTP)
+  - Passkey (WebAuthn) support
+- JWT-based session management
+- Custom user session with role and organization information
+
+## Core Authentication Files
+- `/auth.ts` - Main Next-Auth configuration
+- `/middleware.ts` - Route protection middleware
+- `/lib/auth/adapter.ts` - Database adapter configuration
+- `/app/(auth)/*` - Authentication-related pages (login, register, etc.)
+
+## Session Structure
+```typescript
+interface Session {
+  user: {
+    id: string
+    email: string
+    organizationId?: string
+    role: UserRole
+  }
+}
+```
+
+## Using Authentication in Server Components
+```typescript
+import { getServerSession } from "next-auth"
+import { redirect } from "next/navigation"
+
+// In a Server Component
+export default async function ProtectedPage() {
+  const session = await getServerSession()
+  
+  if (!session) {
+    redirect("/login")
+  }
+  
+  // Access session data
+  const { user } = session
+  const { id, email, organizationId, role } = user
+  
+  // Continue with the protected logic
+}
+```
+
+## Using Authentication in API Routes
+```typescript
+import { auth } from "@/auth"
+import { NextResponse } from "next/server"
+
+export async function GET(request) {
+  const session = await auth()
+  
+  if (!session) {
+    return new NextResponse(
+      JSON.stringify({ error: "Not authenticated" }),
+      { status: 401 }
+    )
+  }
+  
+  // Access session data and continue with protected logic
+  const { user } = session
+  
+  // ...
+}
+```
+
+## Role-Based Authorization
+- System roles (USER, ADMIN) for application-wide permissions
+- Organization roles (OWNER, ADMIN, MEMBER) for tenant-specific permissions
+- Always check appropriate permissions before performing actions
+- Use middleware for route protection when appropriate
+
+## Multi-Tenant Considerations
+- Sessions include `organizationId` when a user is part of an organization
+- Ensure all data operations respect the current organization context
+- Check organization membership and roles before tenant-specific operations
+- Handle organization switching by updating the session
+
+## Best Practices
+- Do not modify the core authentication flow without careful consideration
+- Keep sensitive operations in server components or API routes, not client components
+- Always handle unauthenticated and unauthorized states gracefully
+- Redirect users to appropriate pages based on their authentication state
+- Use appropriate error messages for authentication/authorization failures

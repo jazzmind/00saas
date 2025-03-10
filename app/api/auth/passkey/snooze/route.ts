@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
-import { getUser, updateUser } from '@/app/lib/database/userDatabase';
-import { getApiSession } from '@/app/lib/auth/getApiSession';
+import { getUser, updateUser } from '@/lib/database/userDatabase';
+import { getApiSession } from '@/lib/auth/getApiSession';
 
 export async function POST(request: NextRequest) {
   try {

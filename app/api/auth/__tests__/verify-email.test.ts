@@ -1,17 +1,17 @@
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 import { POST } from '../verify-email/route';
-import { verifyOTP } from '@/app/lib/auth/emailOTP';
+import { verifyOTP } from '@/lib/auth/emailOTP';
 import { getDoc, updateDoc, DocumentSnapshot, DocumentData, DocumentReference } from 'firebase/firestore';
 import { NextRequest } from 'next/server';
 
 // Mock Firebase
 jest.mock('firebase/firestore');
-jest.mock('@/app/lib/firebase', () => ({
+jest.mock('@/lib/firebase', () => ({
   db: {},
 }));
 
 // Mock emailOTP
-jest.mock('@/app/lib/auth/emailOTP', () => ({
+jest.mock('@/lib/auth/emailOTP', () => ({
   verifyOTP: jest.fn(),
 }));
 

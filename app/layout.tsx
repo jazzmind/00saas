@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import Navigation from '@/app/components/Navigation/index';
 import { headers } from 'next/headers';
+import { Providers } from "./providers"
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -19,7 +20,7 @@ export default async function RootLayout({
   const headersList = await headers();
   const pathname = headersList.get('x-pathname') || '';
   
-  const isAuthRoute = pathname.startsWith('/login') || 
+  const isAuthRoute = pathname.startsWith('/signin') || 
                      pathname.startsWith('/verify') || 
                      pathname.startsWith('/signup');
 
@@ -27,7 +28,9 @@ export default async function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         {!isAuthRoute && <Navigation />}
-        {children}
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );

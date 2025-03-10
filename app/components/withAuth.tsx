@@ -1,7 +1,6 @@
 // components/withAuth.tsx
 import { useRouter } from 'next/navigation';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from '../lib/firebase';
+import { auth } from '@/auth';
 
 const withAuth = (Component: React.FC) => {
   const AuthenticatedComponent = (props: React.ComponentProps<typeof Component>) => {

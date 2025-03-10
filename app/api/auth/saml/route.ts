@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { getDatabase } from '@/app/lib/database';
+import { getDatabase } from '@/lib/database';
 import { v4 as uuidv4 } from 'uuid';
 import { SAML, SamlConfig } from '@node-saml/node-saml';
 

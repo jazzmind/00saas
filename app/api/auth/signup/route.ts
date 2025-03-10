@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
-import { getUserByEmail, createUser } from '@/app/lib/database/userDatabase';
-import { sendOTP } from '@/app/lib/auth/emailOTP';
+import { getUserByEmail, createUser } from '@/lib/database/userDatabase';
+import { sendOTP } from '@/lib/auth/emailOTP';
 
 /**
  * API Route: Sign Up

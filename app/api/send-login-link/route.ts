@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { sendOTP } from '@/app/lib/auth/emailOTP';
+import { sendOTP } from '@/lib/auth/emailOTP';
 
 /**
  * API Route: Send Login Link

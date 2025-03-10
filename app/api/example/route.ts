@@ -1,4 +1,4 @@
-import { getApiSession } from '@/app/lib/auth/getApiSession';
+import { getApiSession } from '@/lib/auth/getApiSession';
 
 export async function GET() {
   const { userId, organizationId } = getApiSession();

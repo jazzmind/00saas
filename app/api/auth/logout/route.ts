@@ -1,5 +1,5 @@
-import { deleteSession } from "@/app/lib/session";
-import { getApiSession } from "@/app/lib/auth/getApiSession";
+import { deleteSession } from "@/lib/session";
+import { getApiSession } from "@/lib/auth/getApiSession";
 export async function POST() {
   try {
     const session = await getApiSession();

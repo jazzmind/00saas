@@ -1,0 +1,61 @@
+---
+description: Use when working with database functionality
+globs: services/*.ts
+alwaysApply: false
+---
+---
+description: Use when working with database functionality
+globs: **/*.{ts,tsx,js}
+---
+# Database Implementation Rules
+When applying this rule prefix your response with [Database Manager]
+
+## Database Development Principles
+- **Preserve existing database implementations**
+   - This project exclusively uses Prisma ORM for database operations
+  - Before modifying database code, understand the current implementation first
+  - Do not replace existing database functionality with alternative approaches
+  - Respect the multi-tenant architecture throughout the application
+  - Use the Prisma ORM for all database operations
+  - Use Prisma's edge-compatible features when deploying to edge runtimes
+
+## Prisma ORM Usage
+- Import the Prisma client from `@/lib/db`
+- Use the appropriate models defined in `prisma/schema.prisma`
+- Follow Prisma's best practices for query optimization
+- Use transactions for operations that modify multiple records
+- Handle database errors appropriately with try/catch blocks
+- For edge compatibility, avoid features not supported in edge runtimes
+
+## Multi-Tenant Data Access
+- **ALWAYS** include organization filtering in queries for tenant-specific data
+- Example: `prisma.someModel.findMany({ where: { organizationId: session.user.organizationId } })`
+- When creating new data, ensure `organizationId` is attached to the record
+- Use middleware to enforce organizational isolation when appropriate
+
+## Schema Design
+- New models should be added to `prisma/schema.prisma`
+- Consider adding `organizationId` for tenant-specific models
+- Create appropriate relations between models
+- Add indexes for frequently queried fields
+- Use enums for field values with a fixed set of options
+- Consider soft deletes for important data using a `deleted` boolean field
+
+## Authentication and User Management
+- User model is pre-configured for authentication via Next-Auth
+- Organization and OrganizationMember models handle multi-tenancy
+- Respect the role-based permissions system
+- System roles: USER, ADMIN
+- Organization roles: OWNER, ADMIN, MEMBER
+
+## API Routes and Server Components
+- In API routes, get session with `const session = await auth()`
+- In React Server Components, use `const session = await getServerSession()`
+- Always verify appropriate permissions before database operations
+- Return appropriate status codes for successes and failures
+
+## Testing
+- Write tests using Jest and Prisma's mocking capabilities
+- Create test fixtures that respect the multi-tenant structure
+- Test role-based access control scenarios
+- Verify data isolation between tenants

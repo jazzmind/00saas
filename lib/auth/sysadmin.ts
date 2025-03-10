@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getUser } from '@/app/lib/database/userDatabase';
+import { getUser } from '@/lib/database/userDatabase';
 
 /**
  * Sysadmin Authentication Module

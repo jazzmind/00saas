@@ -2,15 +2,22 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import FullHeightPage from '@/app/components/FullHeightPage';
 
+interface FormData {
+  name: string;
+  organizationName: string;
+}
+
 export default function NewOrganizationPage() {
+  const { data: session, status } = useSession({ required: true });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
-  const [formData, setFormData] = useState({
-    name: '',
-    organizationName: 'Personal'
+  const [formData, setFormData] = useState<FormData>({
+    name: session?.user?.name || '',
+    organizationName: ''
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -25,12 +32,22 @@ export default function NewOrganizationPage() {
         body: JSON.stringify(formData)
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const data = await response.json();
         throw new Error(data.error || 'Failed to create organization');
       }
 
-      router.push('/admin/dashboard');
+      // Update session with new organization
+      await fetch('/api/auth/session', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          organizationId: data.organization.id
+        })
+      });
+
+      router.push('/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
@@ -38,26 +55,23 @@ export default function NewOrganizationPage() {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
-  };
+  if (status === "loading") {
+    return <FullHeightPage>Loading...</FullHeightPage>;
+  }
 
   return (
     <FullHeightPage>
-      <div className="max-w-md w-full space-y-8 pb-24">
+      <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Complete Your Profile
+            Create Your Organization
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Please provide your name and organization details
+            Set up your workspace to get started
           </p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           <div className="rounded-md shadow-sm space-y-4">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700">
@@ -68,10 +82,9 @@ export default function NewOrganizationPage() {
                 name="name"
                 type="text"
                 required
-                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                placeholder="John Doe"
                 value={formData.name}
-                onChange={handleChange}
+                onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               />
             </div>
 
@@ -84,9 +97,9 @@ export default function NewOrganizationPage() {
                 name="organizationName"
                 type="text"
                 required
-                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 value={formData.organizationName}
-                onChange={handleChange}
+                onChange={e => setFormData(prev => ({ ...prev, organizationName: e.target.value }))}
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               />
             </div>
           </div>
@@ -98,7 +111,7 @@ export default function NewOrganizationPage() {
           <button
             type="submit"
             disabled={loading}
-            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
           >
             {loading ? 'Creating...' : 'Create Organization'}
           </button>

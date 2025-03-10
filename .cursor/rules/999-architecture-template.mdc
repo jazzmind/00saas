@@ -1,0 +1,118 @@
+---
+description: When creating a new architecture document
+globs: docs/architecture.md
+alwaysApply: false
+---
+ ---
+description: When creating a new architecture document
+globs: docs/architecture.md
+---
+# Architecture Document Template
+When applying this rule prefix your response with [Architecture Template]
+
+## Architecture Document Structure
+
+```md
+# Architecture Overview
+
+## Project Objective
+- **Project Type**: [Rapid Prototype | Stable MVP | Production System | Legacy Improvement]
+- **Primary Goals**: [Brief description of main project goals]
+- **Constraints**: [Time, budget, technology, or other constraints]
+
+## System Architecture
+[High-level architecture diagram showing main components]
+
+```
+┌─────────────┐     ┌──────────────┐     ┌────────────────┐
+│             │     │              │     │                │
+│   Client    │────▶│ API Gateway  │────▶│ Business Logic │
+│  Application│     │              │     │                │
+│             │◀────│              │◀────│                │
+└─────────────┘     └──────────────┘     └────────────────┘
+                                               │
+                                               │
+                                               ▼
+                          ┌──────────────────────────────────┐
+                          │                                  │
+                          │           Data Layer             │
+                          │                                  │
+                          └──────────────────────────────────┘
+```
+
+## Component Architecture
+
+### [Component 1 Name]
+- **Purpose**: [Brief description]
+- **Implementation**: [Technologies, patterns]
+- **Key Responsibilities**:
+  - [Responsibility 1]
+  - [Responsibility 2]
+
+### [Component 2 Name]
+- **Purpose**: [Brief description]
+- **Implementation**: [Technologies, patterns]
+- **Key Responsibilities**:
+  - [Responsibility 1]
+  - [Responsibility 2]
+
+## Data Architecture
+- **Data Storage**: [Databases, file storage]
+- **Data Models**: [Key entities and relationships]
+- **Data Flow**: [How data moves through the system]
+
+## Key Workflows
+[Diagram or description of main system workflows]
+
+```
+┌─────────┐     ┌─────────┐     ┌─────────┐     ┌─────────┐
+│         │     │         │     │         │     │         │
+│  Step 1 │────▶│  Step 2 │────▶│  Step 3 │────▶│  Step 4 │
+│         │     │         │     │         │     │         │
+└─────────┘     └─────────┘     └─────────┘     └─────────┘
+```
+
+## Security Architecture
+- **Authentication**: [Mechanisms for identity verification]
+- **Authorization**: [Access control approach]
+- **Data Protection**: [Encryption, privacy controls]
+- **Network Security**: [Firewalls, VPCs, etc.]
+
+## Scalability & Performance
+- **Scaling Strategy**: [Horizontal/vertical scaling plans]
+- **Performance Considerations**: [Caching, optimization]
+- **Resource Requirements**: [CPU, memory, storage estimates]
+
+## Monitoring & Observability
+- **Logging**: [Logging strategy]
+- **Metrics**: [Key metrics to collect]
+- **Alerting**: [Alert thresholds and procedures]
+
+## Deployment Architecture
+- **Environments**: [Development, testing, production]
+- **CI/CD Pipeline**: [Build, test, deploy processes]
+- **Infrastructure as Code**: [IaC approach]
+
+## Future Considerations
+- **Known Limitations**: [Current architectural limitations]
+- **Evolution Path**: [How architecture might evolve]
+- **Technical Debt**: [Areas for improvement]
+```
+
+## Documentation Guidelines
+
+1. **Be Concise**: Focus on architectural decisions, not implementation details
+2. **Use Diagrams**: Visual representations are clearer than text alone
+3. **Explain Why**: Document rationale behind key decisions
+4. **Keep Updated**: Update when architectural changes occur
+5. **Link Related Docs**: Reference related technical documentation
+
+## Review Process
+
+Before finalizing the architecture document:
+
+1. Review with technical stakeholders
+2. Validate against requirements
+3. Assess security implications
+4. Consider performance and scalability
+5. Evaluate maintainability
